@@ -1,0 +1,215 @@
+@page "/"
+@implements IAsyncDisposable
+@inject IAudioRecorder Recorder
+@inject ILogger<Home> Logger
+@inject SessionHubClient Hub
+@inject DynamicAudioCapture audioCapture;
+
+@using System.Security.Cryptography
+@using VoiceWordApp.Client.Services
+@using VoiceWordApp.Shared.Models
+
+<PageTitle>Words Rush</PageTitle>
+
+<div class="container py-4">
+    <h1>Words Rush</h1>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <label class="form-label" for="session">Session ID</label>
+            <input id="session" class="form-control" @bind="_sessionId" disabled="@_connected" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" for="name">Display name</label>
+            <input id="name" class="form-control" @bind="_displayName" disabled="@_connected" />
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button class="btn btn-primary w-100" @onclick="JoinAsync" disabled="@(_connected || _busy)">
+                @(_connected ? "Connected" : "Join session")
+            </button>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(_status))
+    {
+        <div class="alert @(_isError ? "alert-danger" : "alert-info")">@_status</div>
+    }
+
+    @if (_recording)
+    {
+        <div class="alert alert-info ">Name... <h6 class="h6 mt-2">@_category</h6></div>
+    }
+
+    <button class="btn btn-danger me-2" @onclick="StartAsync" disabled="@(!_connected || _recording || _busy)">Let's Go</button>
+    <Timer @ref="timerRef" StartValue="20" AutoStart=false OnElapsed="HandleTimeElapsed"/>
+
+    <h2 class="h4 mt-4">Recognized words</h2>
+    <ul class="list-group">
+        @foreach (var item in _words)
+        {
+            <li class="list-group-item">
+                <strong>@item.SpeakerName:</strong> @item.Word
+                <small class="text-muted ms-2">@item.RecognizedAt.LocalDateTime.ToString("HH:mm:ss")</small>
+            </li>
+        }
+    </ul>
+</div>
+
+@code {
+    private string _sessionId = "demo";
+    private string _displayName = "Guest";
+    private string _status = string.Empty;
+    private bool _isError;
+    private bool _connected;
+    private bool _recording;
+    private bool _busy;
+    private readonly List<WordEventDto> _words = [];
+    private Timer timerRef;
+    private string _category = "";
+    private string[] _categories =[
+    "Car companies",
+    "Metalica Songs",
+    "Football Clubs",
+    "See Animals",
+    "Fruits",
+    "Capital Cities",
+    "Counties",
+    "Olympic Sports",
+    "Animals",
+    "American Singers"];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Hub.Joined += (_, _) => InvokeAsync(StateHasChanged);
+        Hub.WordRecognized += word =>
+        {
+            _words.Insert(0, word);
+            InvokeAsync(StateHasChanged);
+        };
+        Hub.Error += message =>
+        {
+            _status = message;
+            _isError = true;
+            InvokeAsync(StateHasChanged);
+        };
+    }
+
+    private async Task JoinAsync()
+    {
+        _busy = true;
+        _isError = false;
+        try
+        {
+            Logger.LogInformation("Join started!");
+            await Hub.StartAsync();
+            await Hub.JoinSessionAsync(_sessionId, _displayName);
+            _connected = true;
+            _status = $"Joined session {_sessionId.Trim()}";
+        }
+        catch (Exception ex)
+        {
+            _status = ex.Message;
+            _isError = true;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task StartAsync()
+    {
+        _category = _categories[Random.Shared.Next(0, 9)];
+        _recording = true;
+        await timerRef?.Start();
+        _status = "Started ...";
+        await StartRecordingAsync();
+    }
+
+    private async Task HandleTimeElapsed()
+    {
+        try{
+        await audioCapture.StopAsync();
+        _status = "Time elapsed !";
+        _isError = true;
+        _recording = false;        
+        StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            _status = ex.Message;
+            _isError = true;
+        }
+        finally
+        {
+            _busy = false;
+            timerRef.Reset();
+            Logger.LogInformation("Reset Timer");
+            StateHasChanged();
+        }
+    }    
+
+    private async Task StartRecordingAsync()
+    {
+        _busy = true;
+        try
+        {
+            Logger.LogInformation("Start Recording");
+            await audioCapture.StartDynamicRecordingAsync(_sessionId, _displayName);
+            _recording = true;
+            _status = "Recording...";
+            _isError = false;
+        }
+        catch (Exception ex)
+        {
+            _status = ex.Message;
+            _isError = true;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task StopAndSendAsync()
+    {
+        Logger.LogInformation("Stop And Send Called");
+        _busy = true;
+        try
+        {
+            Logger.LogInformation("Recorder Stop!");
+            var wav = await Recorder.StopAsync();
+            _recording = false;
+            
+            if (wav.Length == 0)
+            {
+                _status = "No audio was captured.";
+                _isError = true;
+                return;
+            }
+            Logger.LogInformation("Send Audio to server");
+
+            await Hub.SendAudioAsync(new AudioChunkDto(
+                _sessionId.Trim(),
+                _displayName.Trim(),
+                wav));
+            _status = "Audio sent.";
+            _isError = false;
+        }
+        catch (Exception ex)
+        {
+            _status = ex.Message;
+            _isError = true;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await Recorder.DisposeAsync();
+        await Hub.DisposeAsync();
+    }
+}
