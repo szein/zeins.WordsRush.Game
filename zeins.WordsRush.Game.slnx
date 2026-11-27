@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/zeins.WordsRush.Client/zeins.WordsRush.Client.csproj" />  
+  <Project Path="src/zeins.WordsRush.Server/zeins.WordsRush.Server.csproj" />
+  <Project Path="src/zeins.WordsRush.Shared/zeins.WordsRush.Shared.csproj" />
+</Solution>
