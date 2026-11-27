@@ -1,6 +1,6 @@
 using Microsoft.JSInterop;
 
-namespace VoiceWordApp.Client.Services;
+namespace zeins.WordsRush.Client.Services;
 
 public sealed class NAudioRecorder : IAudioRecorder
 {

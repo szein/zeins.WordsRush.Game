@@ -1,4 +1,4 @@
-﻿namespace VoiceWordApp.Shared;
+﻿namespace zeins.WordsRush.Shared;
 
 public class Class1
 {

@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.SignalR;
-using VoiceWordApp.Server.Models;
-using VoiceWordApp.Shared.Contracts;
-using VoiceWordApp.Shared.Models;
-using VoiceWordApp.Server.Services;
+using zeins.WordsRush.Server.Models;
+using zeins.WordsRush.Shared.Contracts;
+using zeins.WordsRush.Shared.Models;
+using zeins.WordsRush.Server.Services;
 
-namespace VoiceWordApp.Server.Hubs;
+namespace zeins.WordsRush.Server.Hubs;
 
 public sealed class SessionHub : Hub<ISessionClient>
 {

@@ -1,6 +1,6 @@
-using VoiceWordApp.Server.Models;
+using zeins.WordsRush.Server.Models;
 
-namespace VoiceWordApp.Server.Services;
+namespace zeins.WordsRush.Server.Services;
 
 public interface ISessionManager
 {

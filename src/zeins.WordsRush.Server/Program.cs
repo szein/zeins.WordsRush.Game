@@ -1,5 +1,5 @@
-using VoiceWordApp.Server.Hubs;
-using VoiceWordApp.Server.Services;
+using zeins.WordsRush.Server.Hubs;
+using zeins.WordsRush.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

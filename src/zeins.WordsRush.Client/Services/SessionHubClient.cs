@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.SignalR.Client;
-using VoiceWordApp.Shared.Models;
+using zeins.WordsRush.Shared.Models;
 
-namespace VoiceWordApp.Client.Services;
+namespace zeins.WordsRush.Client.Services;
 
 public sealed class SessionHubClient : IAsyncDisposable
 {

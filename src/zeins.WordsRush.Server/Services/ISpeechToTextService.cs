@@ -1,4 +1,4 @@
-namespace VoiceWordApp.Server.Services;
+namespace zeins.WordsRush.Server.Services;
 
 public interface ISpeechToTextService
 {

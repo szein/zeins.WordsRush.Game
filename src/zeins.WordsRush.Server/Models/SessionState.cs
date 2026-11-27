@@ -1,4 +1,4 @@
-namespace VoiceWordApp.Server.Models;
+namespace zeins.WordsRush.Server.Models;
 
 public sealed class SessionState
 {

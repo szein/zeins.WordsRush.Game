@@ -1,4 +1,4 @@
-namespace VoiceWordApp.Shared.Contracts;
+namespace zeins.WordsRush.Shared.Contracts;
 
 public interface ISessionClient
 {

@@ -3,8 +3,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using VoiceWordApp.Client.Services;
-using VoiceWordApp.Shared.Models;
+using zeins.WordsRush.Client.Services;
+using zeins.WordsRush.Shared.Models;
 
 public sealed class DynamicAudioCapture : IAsyncDisposable
 {

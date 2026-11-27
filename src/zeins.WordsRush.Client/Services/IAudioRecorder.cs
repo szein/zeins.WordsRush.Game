@@ -1,4 +1,4 @@
-namespace VoiceWordApp.Client.Services;
+namespace zeins.WordsRush.Client.Services;
 
 public interface IAudioRecorder
 {

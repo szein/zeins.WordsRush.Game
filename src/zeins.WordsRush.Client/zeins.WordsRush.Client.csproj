@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VoiceWordApp.Shared\VoiceWordApp.Shared.csproj" />
+    <ProjectReference Include="..\zeins.WordsRush.Shared\zeins.WordsRush.Shared.csproj" />
   </ItemGroup>
 
 </Project>

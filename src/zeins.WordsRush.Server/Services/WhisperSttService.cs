@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using Whisper.net;
 
-namespace VoiceWordApp.Server.Services;
+namespace zeins.WordsRush.Server.Services;
 
 public sealed class WhisperSttOptions
 {

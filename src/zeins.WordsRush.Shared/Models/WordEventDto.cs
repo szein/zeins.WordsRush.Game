@@ -1,4 +1,4 @@
-namespace VoiceWordApp.Shared.Models;
+namespace zeins.WordsRush.Shared.Models;
 
 public sealed record WordEventDto(
     string SessionId,
